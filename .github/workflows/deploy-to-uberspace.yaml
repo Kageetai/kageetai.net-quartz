@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: 'recursive'
+          submodules: "recursive"
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Setup Node
@@ -29,7 +29,7 @@ jobs:
       - run: npm ci
 
       # - name: Init submodule with vault
-        # run: git submodule update --init --remote
+      # run: git submodule update --init --remote
 
       - name: Check types and style
         run: npm run check
