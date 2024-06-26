@@ -28,8 +28,8 @@ jobs:
 
       - run: npm ci
 
-      # - name: Init submodule with vault
-      # run: git submodule update --init --remote
+      - name: Init submodule with vault
+        run: git submodule update --init --remote
 
       - name: Check types and style
         run: npm run typecheck
