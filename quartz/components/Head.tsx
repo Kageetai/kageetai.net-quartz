@@ -3,6 +3,7 @@ import { FullSlug, joinSegments, pathToRoot } from "../util/path"
 import { JSResourceToScriptElement } from "../util/resources"
 import { googleFontHref } from "../util/theme"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
+import { useEffect } from "preact/compat"
 
 export default (() => {
   const Head: QuartzComponent = ({ cfg, fileData, externalResources }: QuartzComponentProps) => {
@@ -17,6 +18,20 @@ export default (() => {
 
     const iconPath = joinSegments(baseDir, "static/icon.png")
     const ogImagePath = `https://${cfg.baseUrl}/static/og-image.png`
+
+    // Matomo Tag Manager
+    useEffect(() => {
+      // @ts-ignore
+      var _mtm = (window._mtm = window._mtm || [])
+      _mtm.push({ "mtm.startTime": new Date().getTime(), event: "mtm.Start" })
+      var d = document,
+        g = d.createElement("script"),
+        s = d.getElementsByTagName("script")[0]
+      g.async = true
+      g.src = "container_FCFl1rrY.js"
+      // @ts-ignore
+      s.parentNode.insertBefore(g, s)
+    }, [])
 
     return (
       <head>
@@ -44,22 +59,6 @@ export default (() => {
         {js
           .filter((resource) => resource.loadTime === "beforeDOMReady")
           .map((res) => JSResourceToScriptElement(res, true))}
-
-        {/*Matomo*/}
-        <script>
-          var _paq = window._paq = window._paq || [];
-          /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-          _paq.push(['trackPageView']);
-          _paq.push(['enableLinkTracking']);
-          (function() {
-          var u="//matomo.kageetai.net/";
-          _paq.push(['setTrackerUrl', u+'matomo.php']);
-          _paq.push(['setSiteId', '1']);
-          var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-          g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
-        })();
-        </script>
-        {/*End Matomo Code*/}
       </head>
     )
   }

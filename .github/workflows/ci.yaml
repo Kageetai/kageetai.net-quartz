@@ -4,13 +4,14 @@ on:
   pull_request:
     branches:
       - v4
+      - main
   push:
     branches:
       - v4
+      - main
 
 jobs:
   build-and-test:
-    if: ${{ github.repository == 'jackyzha0/quartz' }}
     strategy:
       matrix:
         os: [windows-latest, macos-latest, ubuntu-latest]
@@ -38,7 +39,9 @@ jobs:
       - run: npm ci
 
       - name: Check types and style
-        run: npm run typecheck && npm run lint
+        run: npm run typecheck
+      # disable linting for now as markdownlint needs to be configured
+      # run: npm run typecheck && npm run lint
 
       - name: Test
         run: npm test
