@@ -34,6 +34,11 @@ export type Analytics =
       provider: "tinylytics"
       siteId: string
     }
+  | {
+      provider: "matomo"
+      siteId: string
+      host?: string
+    }
 
 export interface GlobalConfiguration {
   pageTitle: string
