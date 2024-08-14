@@ -3,7 +3,6 @@ import { FullSlug, joinSegments, pathToRoot } from "../util/path"
 import { JSResourceToScriptElement } from "../util/resources"
 import { googleFontHref } from "../util/theme"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
-import { useEffect } from "preact/compat"
 
 export default (() => {
   const Head: QuartzComponent = ({ cfg, fileData, externalResources }: QuartzComponentProps) => {
@@ -18,20 +17,6 @@ export default (() => {
 
     const iconPath = joinSegments(baseDir, "static/icon.png")
     const ogImagePath = `https://${cfg.baseUrl}/static/og-image.png`
-
-    // Matomo Tag Manager
-    useEffect(() => {
-      // @ts-ignore
-      var _mtm = (window._mtm = window._mtm || [])
-      _mtm.push({ "mtm.startTime": new Date().getTime(), event: "mtm.Start" })
-      var d = document,
-        g = d.createElement("script"),
-        s = d.getElementsByTagName("script")[0]
-      g.async = true
-      g.src = "container_FCFl1rrY.js"
-      // @ts-ignore
-      s.parentNode.insertBefore(g, s)
-    }, [])
 
     return (
       <head>

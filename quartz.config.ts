@@ -12,7 +12,9 @@ const config: QuartzConfig = {
     enableSPA: true,
     enablePopovers: true,
     analytics: {
-      provider: "plausible",
+      provider: "matomo",
+      siteId: "1",
+      host: "https://matomo.kageetai.net",
     },
     locale: "en-US",
     baseUrl: "kageetai.net",
