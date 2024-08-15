@@ -7,9 +7,9 @@ import rehypeRaw from "rehype-raw"
 import { SKIP, visit } from "unist-util-visit"
 import path from "path"
 import { JSResource } from "../../util/resources"
-// @ts-ignore
+// @ts-expect-error: not a module
 import calloutScript from "../../components/scripts/callout.inline.ts"
-// @ts-ignore
+// @ts-expect-error: not a module
 import checkboxScript from "../../components/scripts/checkbox.inline.ts"
 import { FilePath, pathToRoot, slugTag, slugifyFilePath } from "../../util/path"
 import { toHast } from "mdast-util-to-hast"
@@ -130,7 +130,7 @@ const calloutLineRegex = new RegExp(/^> *\[\!\w+\|?.*?\][+-]?.*$/, "gm")
 // (?:[-_\p{L}\d\p{Z}])+       -> non-capturing group, non-empty string of (Unicode-aware) alpha-numeric characters and symbols, hyphens and/or underscores
 // (?:\/[-_\p{L}\d\p{Z}]+)*)   -> non-capturing group, matches an arbitrary number of tag strings separated by "/"
 const tagRegex = new RegExp(
-  /(?:^| )#((?:[-_\p{L}\p{Emoji}\p{M}\d])+(?:\/[-_\p{L}\p{Emoji}\p{M}\d]+)*)/,
+  /(?:^| )#((?:[-_\p{L}\p{Emoji}\p{M}\d])+(?:\/[-_\p{L}\p{Emoji}\p{M}\d]+)*)/u,
   "gu",
 )
 const blockReferenceRegex = new RegExp(/\^([-_A-Za-z0-9]+)$/, "g")
@@ -201,7 +201,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options> 
 
           const fp = rawFp ?? ""
           const anchor = rawHeader?.trim().replace(/^#+/, "")
-          const blockRef = Boolean(anchor?.startsWith("^")) ? "^" : ""
+          const blockRef = anchor?.startsWith("^") ? "^" : ""
           const displayAnchor = anchor ? `#${blockRef}${slugAnchor(anchor)}` : ""
           const displayAlias = rawAlias ?? rawHeader?.replace("#", "|") ?? ""
           const embedDisplay = value.startsWith("!") ? "!" : ""
@@ -229,7 +229,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options> 
             replacements.push([
               wikilinkRegex,
               (value: string, ...capture: string[]) => {
-                let [rawFp, rawHeader, rawAlias] = capture
+                const [rawFp, rawHeader, rawAlias] = capture
                 const fp = rawFp?.trim() ?? ""
                 const anchor = rawHeader?.trim() ?? ""
                 const alias = rawAlias?.slice(1).trim()

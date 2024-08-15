@@ -1,4 +1,4 @@
-import type { ContentDetails, ContentIndex } from "../../plugins/emitters/contentIndex"
+import type { ContentDetails } from "../../plugins/emitters/contentIndex"
 import * as d3 from "d3"
 import { registerEscapeHandler, removeAllChildren } from "./util"
 import { FullSlug, SimpleSlug, getFullSlug, resolveRelative, simplifySlug } from "../../util/path"
@@ -102,7 +102,7 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
 
   const graphData: { nodes: NodeData[]; links: LinkData[] } = {
     nodes: [...neighbourhood].map((url) => {
-      const text = url.startsWith("tags/") ? "#" + url.substring(5) : data.get(url)?.title ?? url
+      const text = url.startsWith("tags/") ? "#" + url.substring(5) : (data.get(url)?.title ?? url)
       return {
         id: url,
         text: text,
@@ -229,7 +229,7 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
           .nodes()
           .map((it) => d3.select(it.parentNode as HTMLElement).select("text"))
           .forEach((it) => {
-            let opacity = parseFloat(it.style("opacity"))
+            const opacity = parseFloat(it.style("opacity"))
             it.transition()
               .duration(200)
               .attr("opacityOld", opacity)
@@ -279,7 +279,7 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
         .style("opacity", d3.select(parent).select("text").attr("opacityOld"))
         .style("font-size", fontSize + "em")
     })
-    // @ts-ignore
+    // @ts-expect-error: TODO check type error here
     .call(drag(simulation))
 
   // make tags hollow circles
@@ -300,7 +300,7 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
     .style("pointer-events", "none")
     .style("font-size", fontSize + "em")
     .raise()
-    // @ts-ignore
+    // @ts-expect-error: TODO check type error here
     .call(drag(simulation))
 
   // set panning
