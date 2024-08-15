@@ -368,7 +368,7 @@ export async function handleBuild(argv) {
         res.end()
       }
 
-      let fp = req.url?.split("?")[0] ?? "/"
+      const fp = req.url?.split("?")[0] ?? "/"
 
       // handle redirects
       if (fp.endsWith("/")) {
@@ -401,7 +401,7 @@ export async function handleBuild(argv) {
         }
 
         // does /regular/index.html exist? if so, redirect to /regular/
-        let indexFp = path.posix.join(fp, "index.html")
+        const indexFp = path.posix.join(fp, "index.html")
         if (fs.existsSync(path.posix.join(argv.output, indexFp))) {
           return redirect(fp + "/")
         }

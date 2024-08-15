@@ -4,7 +4,7 @@ import { FullSlug, RelativeURL, getFullSlug, normalizeRelativeURLs } from "../..
 // adapted from `micromorph`
 // https://github.com/natemoo-re/micromorph
 const NODE_TYPE_ELEMENT = 1
-let announcer = document.createElement("route-announcer")
+const announcer = document.createElement("route-announcer")
 const isElement = (target: EventTarget | null): target is Element =>
   (target as Node)?.nodeType === NODE_TYPE_ELEMENT
 const isLocalUrl = (href: string) => {
@@ -13,7 +13,9 @@ const isLocalUrl = (href: string) => {
     if (window.location.origin === url.origin) {
       return true
     }
-  } catch (e) {}
+  } catch (e) {
+    /* empty */
+  }
   return false
 }
 

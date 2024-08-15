@@ -6,13 +6,12 @@ async function mouseEnterHandler(
   this: HTMLLinkElement,
   { clientX, clientY }: { clientX: number; clientY: number },
 ) {
-  const link = this
-  if (link.dataset.noPopover === "true") {
+  if (this.dataset.noPopover === "true") {
     return
   }
 
-  async function setPosition(popoverElement: HTMLElement) {
-    const { x, y } = await computePosition(link, popoverElement, {
+  const setPosition = async (popoverElement: HTMLElement) => {
+    const { x, y } = await computePosition(this, popoverElement, {
       middleware: [inline({ x: clientX, y: clientY }), shift(), flip()],
     })
     Object.assign(popoverElement.style, {
@@ -22,17 +21,17 @@ async function mouseEnterHandler(
   }
 
   const hasAlreadyBeenFetched = () =>
-    [...link.children].some((child) => child.classList.contains("popover"))
+    [...this.children].some((child) => child.classList.contains("popover"))
 
   // dont refetch if there's already a popover
   if (hasAlreadyBeenFetched()) {
-    return setPosition(link.lastChild as HTMLElement)
+    return setPosition(this.lastChild as HTMLElement)
   }
 
   const thisUrl = new URL(document.location.href)
   thisUrl.hash = ""
   thisUrl.search = ""
-  const targetUrl = new URL(link.href)
+  const targetUrl = new URL(this.href)
   const hash = targetUrl.hash
   targetUrl.hash = ""
   targetUrl.search = ""
@@ -59,25 +58,27 @@ async function mouseEnterHandler(
   popoverInner.dataset.contentType = contentType ?? undefined
 
   switch (contentTypeCategory) {
-    case "image":
+    case "image": {
       const img = document.createElement("img")
       img.src = targetUrl.toString()
       img.alt = targetUrl.pathname
 
       popoverInner.appendChild(img)
       break
+    }
     case "application":
       switch (typeInfo) {
-        case "pdf":
+        case "pdf": {
           const pdf = document.createElement("iframe")
           pdf.src = targetUrl.toString()
           popoverInner.appendChild(pdf)
           break
+        }
         default:
           break
       }
       break
-    default:
+    default: {
       const contents = await response.text()
       const html = p.parseFromString(contents, "text/html")
       normalizeRelativeURLs(html, targetUrl)
@@ -85,10 +86,11 @@ async function mouseEnterHandler(
       if (elts.length === 0) return
 
       elts.forEach((elt) => popoverInner.appendChild(elt))
+    }
   }
 
   setPosition(popoverElement)
-  link.appendChild(popoverElement)
+  this.appendChild(popoverElement)
 
   if (hash !== "") {
     const heading = popoverInner.querySelector(hash) as HTMLElement | null

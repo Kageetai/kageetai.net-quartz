@@ -1,4 +1,3 @@
-// @ts-ignore
 import { QuartzPluginData } from "../plugins/vfile"
 import {
   joinSegments,
