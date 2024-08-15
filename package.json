@@ -61,7 +61,7 @@
     "mdast-util-to-hast": "^13.1.0",
     "mdast-util-to-string": "^4.0.0",
     "micromorph": "^0.4.5",
-    "preact": "^10.20.1",
+    "preact": "^10.23.2",
     "preact-render-to-string": "^6.5.5",
     "pretty-bytes": "^6.1.1",
     "pretty-time": "^1.1.0",
@@ -91,7 +91,7 @@
     "unified": "^11.0.5",
     "unist-util-visit": "^5.0.0",
     "vfile": "^6.0.1",
-    "workerpool": "^9.1.1",
+    "workerpool": "^9.1.3",
     "ws": "^8.17.0",
     "yargs": "^17.7.2"
   },
