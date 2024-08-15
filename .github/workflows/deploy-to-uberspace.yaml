@@ -41,7 +41,7 @@ jobs:
         run: npx quartz build --bundleInfo
 
       - name: Deploy using Rsync
-        uses: burnett01/rsync-deployments@7
+        uses: burnett01/rsync-deployments@7.0.1
         with:
           switches: -avrh --delete
           path: public/
