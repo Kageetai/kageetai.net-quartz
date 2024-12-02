@@ -20,6 +20,7 @@ const config: QuartzConfig = {
     baseUrl: "kageetai.net",
     ignorePatterns: ["private", "Templates", ".obsidian", "Archive", "Journal"],
     defaultDateType: "created",
+    generateSocialImages: false,
     theme: {
       fontOrigin: "googleFonts",
       cdnCaching: true,
@@ -38,6 +39,7 @@ const config: QuartzConfig = {
           secondary: "#286361",
           tertiary: "#84a59d",
           highlight: "rgba(143, 159, 169, 0.15)",
+          textHighlight: "#fff23688",
         },
         darkMode: {
           light: "#161618",
@@ -48,6 +50,7 @@ const config: QuartzConfig = {
           secondary: "#7ba8aa",
           tertiary: "#84a59d",
           highlight: "rgba(143, 159, 169, 0.15)",
+          textHighlight: "#b3aa0288",
         },
       },
     },
