@@ -1,12 +1,12 @@
 import remarkMath from "remark-math"
 import rehypeKatex from "rehype-katex"
 import rehypeMathjax from "rehype-mathjax/svg"
-//@ts-ignore
+//@ts-expect-error: not a module
 import rehypeTypst from "@myriaddreamin/rehype-typst"
 import { QuartzTransformerPlugin } from "../types"
 import { KatexOptions } from "katex"
 import { Options as MathjaxOptions } from "rehype-mathjax/svg"
-//@ts-ignore
+//@ts-expect-error: not a module
 import { Options as TypstOptions } from "@myriaddreamin/rehype-typst"
 
 interface Options {

@@ -1,6 +1,6 @@
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import { classNames } from "../util/lang"
-// @ts-ignore
+// @ts-expect-error: not a module
 import script from "./scripts/comments.inline"
 
 type Options = {

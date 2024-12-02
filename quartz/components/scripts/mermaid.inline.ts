@@ -196,6 +196,7 @@ document.addEventListener("nav", async () => {
     const popupContainer = pre.querySelector("#mermaid-container") as HTMLElement
     if (!popupContainer) return
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let panZoom: DiagramPanZoom | null = null
 
     function showMermaid() {

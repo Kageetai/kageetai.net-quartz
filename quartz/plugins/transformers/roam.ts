@@ -1,10 +1,8 @@
 import { QuartzTransformerPlugin } from "../types"
 import { PluggableList } from "unified"
-import { SKIP, visit } from "unist-util-visit"
+import { visit } from "unist-util-visit"
 import { ReplaceFunction, findAndReplace as mdastFindReplace } from "mdast-util-find-and-replace"
 import { Root, Html, Paragraph, Text, Link, Parent } from "mdast"
-import { Node } from "unist"
-import { VFile } from "vfile"
 import { BuildVisitor } from "unist-util-visit"
 
 export interface Options {
@@ -34,21 +32,21 @@ const defaultOptions: Options = {
 const orRegex = new RegExp(/{{or:(.*?)}}/, "g")
 const TODORegex = new RegExp(/{{.*?\bTODO\b.*?}}/, "g")
 const DONERegex = new RegExp(/{{.*?\bDONE\b.*?}}/, "g")
-const videoRegex = new RegExp(/{{.*?\[\[video\]\].*?\:(.*?)}}/, "g")
-const youtubeRegex = new RegExp(
-  /{{.*?\[\[video\]\].*?(https?:\/\/(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]*)(&(amp;)?[\w\?=]*)?)}}/,
-  "g",
-)
+// const videoRegex = new RegExp(/{{.*?\[\[video\]\].*?\:(.*?)}}/, "g")
+// const youtubeRegex = new RegExp(
+//   /{{.*?\[\[video\]\].*?(https?:\/\/(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]*)(&(amp;)?[\w\?=]*)?)}}/,
+//   "g",
+// )
 
 // const multimediaRegex = new RegExp(/{{.*?\b(video|audio)\b.*?\:(.*?)}}/, "g")
 
-const audioRegex = new RegExp(/{{.*?\[\[audio\]\].*?\:(.*?)}}/, "g")
-const pdfRegex = new RegExp(/{{.*?\[\[pdf\]\].*?\:(.*?)}}/, "g")
+// const audioRegex = new RegExp(/{{.*?\[\[audio\]\].*?\:(.*?)}}/, "g")
+// const pdfRegex = new RegExp(/{{.*?\[\[pdf\]\].*?\:(.*?)}}/, "g")
 const blockquoteRegex = new RegExp(/(\[\[>\]\])\s*(.*)/, "g")
 const roamHighlightRegex = new RegExp(/\^\^(.+)\^\^/, "g")
 const roamItalicRegex = new RegExp(/__(.+)__/, "g")
-const tableRegex = new RegExp(/- {{.*?\btable\b.*?}}/, "g") /* TODO */
-const attributeRegex = new RegExp(/\b\w+(?:\s+\w+)*::/, "g") /* TODO */
+// const tableRegex = new RegExp(/- {{.*?\btable\b.*?}}/, "g") /* TODO */
+// const attributeRegex = new RegExp(/\b\w+(?:\s+\w+)*::/, "g") /* TODO */
 
 function isSpecialEmbed(node: Paragraph): boolean {
   if (node.children.length !== 2) return false
@@ -80,7 +78,7 @@ function transformSpecialEmbed(node: Paragraph, opts: Options): Html | null {
         </audio>`,
           }
         : null
-    case "video":
+    case "video": {
       if (!opts.videoComponent) return null
       // Check if it's a YouTube video
       const youtubeMatch = url.match(
@@ -112,6 +110,7 @@ function transformSpecialEmbed(node: Paragraph, opts: Options): Html | null {
           </video>`,
         }
       }
+    }
     case "pdf":
       return opts.pdfComponent
         ? {
@@ -135,7 +134,7 @@ export const RoamFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options> | un
       const plugins: PluggableList = []
 
       plugins.push(() => {
-        return (tree: Root, file: VFile) => {
+        return (tree: Root) => {
           const replacements: [RegExp, ReplaceFunction][] = []
 
           // Handle special embeds (audio, video, PDF)

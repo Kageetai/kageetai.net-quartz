@@ -1,5 +1,20 @@
 import type { ContentDetails } from "../../plugins/emitters/contentIndex"
-import * as d3 from "d3"
+import {
+  SimulationNodeDatum,
+  SimulationLinkDatum,
+  Simulation,
+  forceSimulation,
+  forceManyBody,
+  forceCenter,
+  forceLink,
+  forceCollide,
+  zoomIdentity,
+  select,
+  drag,
+  zoom,
+} from "d3"
+import { Text, Graphics, Application, Container, Circle } from "pixi.js"
+import { Group as TweenGroup, Tween as Tweened } from "@tweenjs/tween.js"
 import { registerEscapeHandler, removeAllChildren } from "./util"
 import { FullSlug, SimpleSlug, getFullSlug, resolveRelative, simplifySlug } from "../../util/path"
 import { D3Config } from "../Graph"
@@ -37,6 +52,7 @@ type NodeRenderData = GraphicsInfo & {
 }
 
 const localStorageKey = "graph-visited"
+
 function getVisited(): Set<SimpleSlug> {
   return new Set(JSON.parse(localStorage.getItem(localStorageKey) ?? "[]"))
 }
@@ -137,15 +153,13 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
     }
   })
   const graphData: { nodes: NodeData[]; links: LinkData[] } = {
-    nodes: [...neighbourhood].map((url) => {
-      const text = url.startsWith("tags/") ? "#" + url.substring(5) : (data.get(url)?.title ?? url)
-      return {
-        id: url,
-        text: text,
-        tags: data.get(url)?.tags ?? [],
-      }
-    }),
-    links: links.filter((l) => neighbourhood.has(l.source) && neighbourhood.has(l.target)),
+    nodes,
+    links: links
+      .filter((l) => neighbourhood.has(l.source) && neighbourhood.has(l.target))
+      .map((l) => ({
+        source: nodes.find((n) => n.id === l.source)!,
+        target: nodes.find((n) => n.id === l.target)!,
+      })),
   }
 
   // we virtualize the simulation and use pixi to actually render it
@@ -200,6 +214,7 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
   let hoveredNeighbours: Set<string> = new Set()
   const linkRenderData: LinkRenderData[] = []
   const nodeRenderData: NodeRenderData[] = []
+
   function updateHoverInfo(newHoveredId: string | null) {
     hoveredNodeId = newHoveredId
 
@@ -298,37 +313,18 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
         tweenGroup.getAll().forEach((tw) => tw.stop())
       },
     })
-    .on("mouseover", function (_, d) {
-      const currentId = d.id
-      const linkNodes = d3
-        .selectAll(".link")
-        .filter((d: any) => d.source.id === currentId || d.target.id === currentId)
+  }
 
-      if (focusOnHover) {
-        // fade out non-neighbour nodes
-        connectedNodes = linkNodes.data().flatMap((d: any) => [d.source.id, d.target.id])
+  function renderNodes() {
+    tweens.get("hover")?.stop()
 
-        d3.selectAll<HTMLElement, NodeData>(".link")
-          .transition()
-          .duration(200)
-          .style("opacity", 0.2)
-        d3.selectAll<HTMLElement, NodeData>(".node")
-          .filter((d) => !connectedNodes.includes(d.id))
-          .transition()
-          .duration(200)
-          .style("opacity", 0.2)
+    const tweenGroup = new TweenGroup()
+    for (const n of nodeRenderData) {
+      let alpha = 1
 
-        d3.selectAll<HTMLElement, NodeData>(".node")
-          .filter((d) => !connectedNodes.includes(d.id))
-          .nodes()
-          .map((it) => d3.select(it.parentNode as HTMLElement).select("text"))
-          .forEach((it) => {
-            const opacity = parseFloat(it.style("opacity"))
-            it.transition()
-              .duration(200)
-              .attr("opacityOld", opacity)
-              .style("opacity", Math.min(opacity, 0.2))
-          })
+      // if we are hovering over a node, we want to highlight the immediate neighbours
+      if (hoveredNodeId !== null && focusOnHover) {
+        alpha = n.active ? 1 : 0.2
       }
 
       tweenGroup.add(new Tweened<Graphics>(n.gfx, tweenGroup).to({ alpha }, 200))
@@ -390,31 +386,112 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
       },
       resolution: window.devicePixelRatio * 4,
     })
-    // @ts-expect-error: TODO check type error here
-    .call(drag(simulation))
+    label.scale.set(1 / scale)
 
-  // make tags hollow circles
-  node
-    .filter((d) => d.id.startsWith("tags/"))
-    .attr("stroke", color)
-    .attr("stroke-width", 2)
-    .attr("fill", "var(--light)")
+    let oldLabelOpacity = 0
+    const isTagNode = nodeId.startsWith("tags/")
+    const gfx = new Graphics({
+      interactive: true,
+      label: nodeId,
+      eventMode: "static",
+      hitArea: new Circle(0, 0, nodeRadius(n)),
+      cursor: "pointer",
+    })
+      .circle(0, 0, nodeRadius(n))
+      .fill({ color: isTagNode ? computedStyleMap["--light"] : color(n) })
+      .stroke({ width: isTagNode ? 2 : 0, color: color(n) })
+      .on("pointerover", (e) => {
+        updateHoverInfo(e.target.label)
+        oldLabelOpacity = label.alpha
+        if (!dragging) {
+          renderPixiFromD3()
+        }
+      })
+      .on("pointerleave", () => {
+        updateHoverInfo(null)
+        label.alpha = oldLabelOpacity
+        if (!dragging) {
+          renderPixiFromD3()
+        }
+      })
 
-  // draw labels
-  const labels = graphNode
-    .append("text")
-    .attr("dx", 0)
-    .attr("dy", (d) => -nodeRadius(d) + "px")
-    .attr("text-anchor", "middle")
-    .text((d) => d.text)
-    .style("opacity", (opacityScale - 1) / 3.75)
-    .style("pointer-events", "none")
-    .style("font-size", fontSize + "em")
-    .raise()
-    // @ts-expect-error: TODO check type error here
-    .call(drag(simulation))
+    nodesContainer.addChild(gfx)
+    labelsContainer.addChild(label)
 
-  // set panning
+    const nodeRenderDatum: NodeRenderData = {
+      simulationData: n,
+      gfx,
+      label,
+      color: color(n),
+      alpha: 1,
+      active: false,
+    }
+
+    nodeRenderData.push(nodeRenderDatum)
+  }
+
+  for (const l of graphData.links) {
+    const gfx = new Graphics({ interactive: false, eventMode: "none" })
+    linkContainer.addChild(gfx)
+
+    const linkRenderDatum: LinkRenderData = {
+      simulationData: l,
+      gfx,
+      color: computedStyleMap["--lightgray"],
+      alpha: 1,
+      active: false,
+    }
+
+    linkRenderData.push(linkRenderDatum)
+  }
+
+  let currentTransform = zoomIdentity
+  if (enableDrag) {
+    select<HTMLCanvasElement, NodeData | undefined>(app.canvas).call(
+      drag<HTMLCanvasElement, NodeData | undefined>()
+        .container(() => app.canvas)
+        .subject(() => graphData.nodes.find((n) => n.id === hoveredNodeId))
+        .on("start", function dragstarted(event) {
+          if (!event.active) simulation.alphaTarget(1).restart()
+          event.subject.fx = event.subject.x
+          event.subject.fy = event.subject.y
+          event.subject.__initialDragPos = {
+            x: event.subject.x,
+            y: event.subject.y,
+            fx: event.subject.fx,
+            fy: event.subject.fy,
+          }
+          dragStartTime = Date.now()
+          dragging = true
+        })
+        .on("drag", function dragged(event) {
+          const initPos = event.subject.__initialDragPos
+          event.subject.fx = initPos.x + (event.x - initPos.x) / currentTransform.k
+          event.subject.fy = initPos.y + (event.y - initPos.y) / currentTransform.k
+        })
+        .on("end", function dragended(event) {
+          if (!event.active) simulation.alphaTarget(0)
+          event.subject.fx = null
+          event.subject.fy = null
+          dragging = false
+
+          // if the time between mousedown and mouseup is short, we consider it a click
+          if (Date.now() - dragStartTime < 500) {
+            const node = graphData.nodes.find((n) => n.id === event.subject.id) as NodeData
+            const targ = resolveRelative(fullSlug, node.id)
+            window.spaNavigate(new URL(targ, window.location.toString()))
+          }
+        }),
+    )
+  } else {
+    for (const node of nodeRenderData) {
+      node.gfx.on("click", () => {
+        const targ = resolveRelative(fullSlug, node.simulationData.id)
+        window.spaNavigate(new URL(targ, window.location.toString()))
+      })
+    }
+  }
+
   if (enableZoom) {
     select<HTMLCanvasElement, NodeData>(app.canvas).call(
       zoom<HTMLCanvasElement, NodeData>()
@@ -430,7 +507,7 @@ async function renderGraph(container: string, fullSlug: FullSlug) {
 
           // zoom adjusts opacity of labels too
           const scale = transform.k * opacityScale
-          let scaleOpacity = Math.max((scale - 1) / 3.75, 0)
+          const scaleOpacity = Math.max((scale - 1) / 3.75, 0)
           const activeNodes = nodeRenderData.filter((n) => n.active).flatMap((n) => n.label)
 
           for (const label of labelsContainer.children) {
@@ -513,7 +590,11 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     if (e.key === "g" && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
       e.preventDefault()
       const globalGraphOpen = container?.classList.contains("active")
-      globalGraphOpen ? hideGlobalGraph() : renderGlobalGraph()
+      if (globalGraphOpen) {
+        hideGlobalGraph()
+      } else {
+        renderGlobalGraph()
+      }
     }
   }
 
