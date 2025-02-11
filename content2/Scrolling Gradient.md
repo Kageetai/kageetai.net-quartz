@@ -1,6 +1,6 @@
 ---
 created: 2024-05-13T17:48+02:00
-changed: 2024-07-31T15:39+02:00
+changed: 2025-02-11T13:16+01:00
 image: "[[Scrolling Gradient-20240514181254633.webp]]"
 publish: true
 summary: In this article, I present a short experiment to combine an animated background gradient with scroll animations in CSS.
@@ -231,6 +231,14 @@ It has three small downsides though:
 
 With this in mind, the code becomes considerably simpler and easier to understand though, and as this is an experiment to try out new technologies, I consider this a very interesting solution at least.
 
+## Even further
+
+It's been a while since I originally wrote this, but now, more than half a year later, I stumbled upon another interesting article in my feeds [Overflow/scrollbar detection using modern CSS](https://css-tip.com/overflow-detection/), which inspired me to see if I can improve my original experiment again.
+A small change in structure and usage of the scroll timeline allows the container query to switch automatically and more reliable, than the solution above. It looks a bit more confusing at first, using a named scroll timeline, but actually works very well and smoothly.
+One more downside is that this doesn't work with Firefox at all (yet), as scroll timelines are not entirely supported there yet.
+
+Here is the updated code in its entirety on GitHub: [refactor: rewrite animation and container query based on latest article · Kageetai/scrolling-gradient@1db18af](https://github.com/Kageetai/scrolling-gradient/commit/1db18af0d403349d79e896bcdc2de05fb13fcdc4)
+
 The end result looks like this:
 
 <p class="codepen" data-height="300" data-default-tab="css,result" data-slug-hash="BagBrMe" data-pen-title="scrolling gradient" data-preview="true" data-user="Kageetai" style="height: 300px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;">
@@ -265,7 +273,7 @@ But with either these two missing for Firefox, it will degrade nicely to the def
 
 ## The End
 
-Anyway, I hope this little write-up of my little mini-project was insightful or you even learned something. Scroll-driven animations are still quite new, so here is a nice resource if you want to learn more about them: [Scroll-driven Animations](https://scroll-driven-animations.style/)
+Anyway, I hope this little write-up of my little mini-project was insightful or you even learned something. Scroll-driven animations are still quite new, so here is a nice resource if you want to learn more about them: [Scroll-driven Animations](https://scroll-driven-animations.style/).
 Here is also a nice playlist on YouTube, if you prefer to learn more visually: [Before you continue to YouTube](https://www.youtube.com/playlist?list=PLNYkxOF6rcICM3ttukz9x5LCNOHfWBVnn)
 
 Thanks for reading this little "rambly" experiment of mine and I look forward to any comments, suggestions or otherwise messages.
