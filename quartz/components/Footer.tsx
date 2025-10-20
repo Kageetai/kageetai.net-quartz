@@ -13,6 +13,7 @@ export default ((opts?: Options) => {
     const links = opts?.links ?? []
     return (
       <footer class={`${displayClass ?? ""}`}>
+        <hr />
         <p>
           {i18n(cfg.locale).components.footer.createdWith}{" "}
           <a href="https://quartz.jzhao.xyz/">Quartz v{version}</a> © {year}
@@ -20,9 +21,7 @@ export default ((opts?: Options) => {
         <ul>
           {Object.entries(links).map(([text, link]) => (
             <li>
-              <a rel="me" href={link}>
-                {text}
-              </a>
+              <a href={link}>{text}</a>
             </li>
           ))}
         </ul>

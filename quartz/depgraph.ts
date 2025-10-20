@@ -6,7 +6,7 @@ export default class DepGraph<T> {
     this._graph = new Map()
   }
 
-  export(): object {
+  export(): Object {
     return {
       nodes: this.nodes,
       edges: this.edges,
@@ -24,7 +24,7 @@ export default class DepGraph<T> {
   }
 
   get edges(): [T, T][] {
-    const edges: [T, T][] = []
+    let edges: [T, T][] = []
     this.forEachEdge((edge) => edges.push(edge))
     return edges
   }
@@ -138,7 +138,7 @@ export default class DepGraph<T> {
   // Remove all nodes that do not have any incoming or outgoing edges
   // A node may be orphaned if the only node pointing to it was removed
   removeOrphanNodes(): Set<T> {
-    const orphanNodes = new Set<T>()
+    let orphanNodes = new Set<T>()
 
     this.forEachNode((node) => {
       if (this.inDegree(node) === 0 && this.outDegree(node) === 0) {
@@ -158,13 +158,13 @@ export default class DepGraph<T> {
   //                     D ---^
   // and the node is B, this function returns [C]
   getLeafNodes(node: T): Set<T> {
-    const stack: T[] = [node]
-    const visited = new Set<T>()
-    const leafNodes = new Set<T>()
+    let stack: T[] = [node]
+    let visited = new Set<T>()
+    let leafNodes = new Set<T>()
 
     // DFS
     while (stack.length > 0) {
-      const node = stack.pop()!
+      let node = stack.pop()!
 
       // If the node is already visited, skip it
       if (visited.has(node)) {
@@ -194,15 +194,15 @@ export default class DepGraph<T> {
   // and the node is B, this function returns [A, B, D]
   getLeafNodeAncestors(node: T): Set<T> {
     const leafNodes = this.getLeafNodes(node)
-    const visited = new Set<T>()
-    const upstreamNodes = new Set<T>()
+    let visited = new Set<T>()
+    let upstreamNodes = new Set<T>()
 
     // Backwards DFS for each leaf node
     leafNodes.forEach((leafNode) => {
-      const stack: T[] = [leafNode]
+      let stack: T[] = [leafNode]
 
       while (stack.length > 0) {
-        const node = stack.pop()!
+        let node = stack.pop()!
 
         if (visited.has(node)) {
           continue

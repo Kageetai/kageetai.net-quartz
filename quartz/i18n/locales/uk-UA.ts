@@ -54,7 +54,7 @@ export default {
       title: "Зміст",
     },
     contentMeta: {
-      readingTime: ({ minutes }) => `${minutes} хв читання`,
+      readingTime: ({ minutes }) => `${minutes} min read`,
     },
   },
   pages: {
@@ -68,17 +68,17 @@ export default {
       home: "Повернутися на головну сторінку",
     },
     folderContent: {
-      folder: "Тека",
+      folder: "Папка",
       itemsUnderFolder: ({ count }) =>
-        count === 1 ? "У цій теці 1 елемент." : `Елементів у цій теці: ${count}.`,
+        count === 1 ? "У цій папці 1 елемент." : `Елементів у цій папці: ${count}.`,
     },
     tagContent: {
-      tag: "Мітка",
-      tagIndex: "Індекс мітки",
+      tag: "Тег",
+      tagIndex: "Індекс тегу",
       itemsUnderTag: ({ count }) =>
-        count === 1 ? "1 елемент з цією міткою." : `Елементів з цією міткою: ${count}.`,
-      showingFirst: ({ count }) => `Показ перших ${count} міток.`,
-      totalTags: ({ count }) => `Всього знайдено міток: ${count}.`,
+        count === 1 ? "1 елемент з цим тегом." : `Елементів з цим тегом: ${count}.`,
+      showingFirst: ({ count }) => `Показ перших ${count} тегів.`,
+      totalTags: ({ count }) => `Всього знайдено тегів: ${count}.`,
     },
   },
 } as const satisfies Translation

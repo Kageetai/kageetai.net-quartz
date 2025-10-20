@@ -1,4 +1,4 @@
-// @ts-expect-error: not a module
+// @ts-ignore
 import clipboardScript from "./scripts/clipboard.inline"
 import clipboardStyle from "./styles/clipboard.scss"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"

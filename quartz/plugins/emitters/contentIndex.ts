@@ -80,7 +80,7 @@ function generateRSSFeed(cfg: GlobalConfiguration, idx: ContentIndex, limit?: nu
     <channel>
       <title>${escapeHTML(cfg.pageTitle)}</title>
       <link>https://${base}</link>
-      <description>${limit ? i18n(cfg.locale).pages.rss.lastFewNotes({ count: limit }) : i18n(cfg.locale).pages.rss.recentNotes} on ${escapeHTML(
+      <description>${!!limit ? i18n(cfg.locale).pages.rss.lastFewNotes({ count: limit }) : i18n(cfg.locale).pages.rss.recentNotes} on ${escapeHTML(
         cfg.pageTitle,
       )}</description>
       <generator>Quartz -- quartz.jzhao.xyz</generator>
@@ -122,7 +122,6 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
         const date = getDate(ctx.cfg.configuration, file.data) ?? new Date()
         if (opts?.includeEmptyFiles || (file.data.text && file.data.text !== "")) {
           linkIndex.set(slug, {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
             title: file.data.frontmatter?.title!,
             links: file.data.links ?? [],
             tags: file.data.frontmatter?.tags ?? [],

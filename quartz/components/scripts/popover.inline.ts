@@ -3,15 +3,16 @@ import { normalizeRelativeURLs } from "../../util/path"
 
 const p = new DOMParser()
 async function mouseEnterHandler(
-  this: HTMLAnchorElement,
+  this: HTMLLinkElement,
   { clientX, clientY }: { clientX: number; clientY: number },
 ) {
-  if (this.dataset.noPopover === "true") {
+  const link = this
+  if (link.dataset.noPopover === "true") {
     return
   }
 
-  const setPosition = async (popoverElement: HTMLElement) => {
-    const { x, y } = await computePosition(this, popoverElement, {
+  async function setPosition(popoverElement: HTMLElement) {
+    const { x, y } = await computePosition(link, popoverElement, {
       middleware: [inline({ x: clientX, y: clientY }), shift(), flip()],
     })
     Object.assign(popoverElement.style, {
@@ -21,17 +22,17 @@ async function mouseEnterHandler(
   }
 
   const hasAlreadyBeenFetched = () =>
-    [...this.children].some((child) => child.classList.contains("popover"))
+    [...link.children].some((child) => child.classList.contains("popover"))
 
   // dont refetch if there's already a popover
   if (hasAlreadyBeenFetched()) {
-    return setPosition(this.lastChild as HTMLElement)
+    return setPosition(link.lastChild as HTMLElement)
   }
 
   const thisUrl = new URL(document.location.href)
   thisUrl.hash = ""
   thisUrl.search = ""
-  const targetUrl = new URL(this.href)
+  const targetUrl = new URL(link.href)
   const hash = targetUrl.hash
   targetUrl.hash = ""
   targetUrl.search = ""
@@ -58,27 +59,25 @@ async function mouseEnterHandler(
   popoverInner.dataset.contentType = contentType ?? undefined
 
   switch (contentTypeCategory) {
-    case "image": {
+    case "image":
       const img = document.createElement("img")
       img.src = targetUrl.toString()
       img.alt = targetUrl.pathname
 
       popoverInner.appendChild(img)
       break
-    }
     case "application":
       switch (typeInfo) {
-        case "pdf": {
+        case "pdf":
           const pdf = document.createElement("iframe")
           pdf.src = targetUrl.toString()
           popoverInner.appendChild(pdf)
           break
-        }
         default:
           break
       }
       break
-    default: {
+    default:
       const contents = await response.text()
       const html = p.parseFromString(contents, "text/html")
       normalizeRelativeURLs(html, targetUrl)
@@ -86,11 +85,10 @@ async function mouseEnterHandler(
       if (elts.length === 0) return
 
       elts.forEach((elt) => popoverInner.appendChild(elt))
-    }
   }
 
   setPosition(popoverElement)
-  this.appendChild(popoverElement)
+  link.appendChild(popoverElement)
 
   if (hash !== "") {
     const heading = popoverInner.querySelector(hash) as HTMLElement | null
@@ -102,7 +100,7 @@ async function mouseEnterHandler(
 }
 
 document.addEventListener("nav", () => {
-  const links = [...document.getElementsByClassName("internal")] as HTMLAnchorElement[]
+  const links = [...document.getElementsByClassName("internal")] as HTMLLinkElement[]
   for (const link of links) {
     link.addEventListener("mouseenter", mouseEnterHandler)
     window.addCleanup(() => link.removeEventListener("mouseenter", mouseEnterHandler))

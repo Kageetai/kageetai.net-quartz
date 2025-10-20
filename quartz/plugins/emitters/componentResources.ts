@@ -1,9 +1,9 @@
 import { FilePath, FullSlug, joinSegments } from "../../util/path"
 import { QuartzEmitterPlugin } from "../types"
 
-// @ts-expect-error: not a module
+// @ts-ignore
 import spaRouterScript from "../../components/scripts/spa.inline"
-// @ts-expect-error: not a module
+// @ts-ignore
 import popoverScript from "../../components/scripts/popover.inline"
 import styles from "../../styles/custom.scss"
 import popoverStyle from "../../components/styles/popover.scss"
@@ -143,21 +143,6 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
       tinylyticsScript.src = "https://tinylytics.app/embed/${siteId}.js"
       tinylyticsScript.defer = true
       document.head.appendChild(tinylyticsScript)
-    `)
-  } else if (cfg.analytics?.provider === "matomo") {
-    const siteId = cfg.analytics.siteId
-    componentResources.afterDOMLoaded.push(`
-      var _paq = window._paq = window._paq || [];
-      /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-      _paq.push(['trackPageView']);
-      _paq.push(['enableLinkTracking']);
-      (function() {
-        var u="${cfg.analytics.host ?? "https://matomo.com"}/";
-        _paq.push(['setTrackerUrl', u+'matomo.php']);
-        _paq.push(['setSiteId', '${siteId}']);
-        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-        g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
-      })();
     `)
   }
 

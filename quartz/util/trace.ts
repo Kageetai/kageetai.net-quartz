@@ -4,7 +4,7 @@ import { isMainThread } from "workerpool"
 
 const rootFile = /.*at file:/
 export function trace(msg: string, err: Error) {
-  const stack = err.stack ?? ""
+  let stack = err.stack ?? ""
 
   const lines: string[] = []
 
