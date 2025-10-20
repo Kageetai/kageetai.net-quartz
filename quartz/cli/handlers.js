@@ -15,6 +15,7 @@ import { WebSocketServer } from "ws"
 import { randomUUID } from "crypto"
 import { Mutex } from "async-mutex"
 import { CreateArgv } from "./args.js"
+import { globby } from "globby"
 import {
   exitIfCancel,
   escapePath,
@@ -44,7 +45,7 @@ export async function handleCreate(argv) {
   let linkResolutionStrategy = argv.links?.toLowerCase()
   const sourceDirectory = argv.source
 
-  // If all cmd arguments were provided, check if theyre valid
+  // If all cmd arguments were provided, check if they're valid
   if (setupStrategy && linkResolutionStrategy) {
     // If setup isn't, "new", source argument is required
     if (setupStrategy !== "new") {
@@ -236,6 +237,11 @@ export async function handleBuild(argv) {
         type: "css-text",
         cssImports: true,
       }),
+      sassPlugin({
+        filter: /\.inline\.scss$/,
+        type: "css",
+        cssImports: true,
+      }),
       {
         name: "inline-script-loader",
         setup(build) {
@@ -285,8 +291,8 @@ export async function handleBuild(argv) {
     }
 
     if (cleanupBuild) {
-      await cleanupBuild()
       console.log(chalk.yellow("Detected a source code change, doing a hard rebuild..."))
+      await cleanupBuild()
     }
 
     const result = await ctx.rebuild().catch((err) => {
@@ -350,6 +356,15 @@ export async function handleBuild(argv) {
               source: "**/*.*",
               headers: [{ key: "Content-Disposition", value: "inline" }],
             },
+            {
+              source: "**/*.webp",
+              headers: [{ key: "Content-Type", value: "image/webp" }],
+            },
+            // fixes bug where avif images are displayed as text instead of images (future proof)
+            {
+              source: "**/*.avif",
+              headers: [{ key: "Content-Type", value: "image/avif" }],
+            },
           ],
         })
         const status = res.statusCode
@@ -368,7 +383,7 @@ export async function handleBuild(argv) {
         res.end()
       }
 
-      let fp = req.url?.split("?")[0] ?? "/"
+      const fp = req.url?.split("?")[0] ?? "/"
 
       // handle redirects
       if (fp.endsWith("/")) {
@@ -401,7 +416,7 @@ export async function handleBuild(argv) {
         }
 
         // does /regular/index.html exist? if so, redirect to /regular/
-        let indexFp = path.posix.join(fp, "index.html")
+        const indexFp = path.posix.join(fp, "index.html")
         if (fs.existsSync(path.posix.join(argv.output, indexFp))) {
           return redirect(fp + "/")
         }
@@ -418,13 +433,12 @@ export async function handleBuild(argv) {
       ),
     )
     console.log("hint: exit with ctrl+c")
+    const paths = await globby(["**/*.ts", "**/*.tsx", "**/*.scss", "package.json"])
     chokidar
-      .watch(["**/*.ts", "**/*.tsx", "**/*.scss", "package.json"], {
-        ignoreInitial: true,
-      })
-      .on("all", async () => {
-        build(clientRefresh)
-      })
+      .watch(paths, { ignoreInitial: true })
+      .on("add", () => build(clientRefresh))
+      .on("change", () => build(clientRefresh))
+      .on("unlink", () => build(clientRefresh))
   } else {
     await build(() => {})
     ctx.dispose()
@@ -457,7 +471,25 @@ export async function handleUpdate(argv) {
 
   await popContentFolder(contentFolder)
   console.log("Ensuring dependencies are up to date")
-  const res = spawnSync("npm", ["i"], { stdio: "inherit" })
+
+  /*
+  On Windows, if the command `npm` is really `npm.cmd', this call fails
+  as it will be unable to find `npm`. This is often the case on systems
+  where `npm` is installed via a package manager.
+
+  This means `npx quartz update` will not actually update dependencies
+  on Windows, without a manual `npm i` from the caller.
+
+  However, by spawning a shell, we are able to call `npm.cmd`.
+  See: https://nodejs.org/api/child_process.html#spawning-bat-and-cmd-files-on-windows
+  */
+
+  const opts = { stdio: "inherit" }
+  if (process.platform === "win32") {
+    opts.shell = true
+  }
+
+  const res = spawnSync("npm", ["i"], opts)
   if (res.status === 0) {
     console.log(chalk.green("Done!"))
   } else {

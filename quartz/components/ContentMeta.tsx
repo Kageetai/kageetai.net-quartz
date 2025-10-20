@@ -1,10 +1,10 @@
-import { formatDate, getDate } from "./Date"
-import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
-import readingTime from "reading-time"
-import { classNames } from "../util/lang"
-import { i18n } from "../i18n"
 import { JSX } from "preact"
+import readingTime from "reading-time"
+import { i18n } from "../i18n"
+import { classNames } from "../util/lang"
+import { formatDate, getDate } from "./Date"
 import style from "./styles/contentMeta.scss"
+import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
 
 interface ContentMetaOptions {
   /**
@@ -40,6 +40,14 @@ export default ((opts?: Partial<ContentMetaOptions>) => {
           minutes: Math.ceil(minutes),
         })
         segments.push(displayedTime)
+      }
+
+      if (fileData.frontmatter?.url !== "" && typeof fileData.frontmatter?.url === "string") {
+        segments.push(
+          <a href={fileData.frontmatter.url} target="_blank" rel="noopener noreferrer">
+            Source
+          </a>,
+        )
       }
 
       const segmentsElements = segments.map((segment) => <span>{segment}</span>)

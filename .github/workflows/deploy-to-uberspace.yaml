@@ -1,0 +1,51 @@
+name: Deploy to Uberspace
+on:
+  push:
+    branches: [main]
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: "recursive"
+          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - run: npm ci
+
+      - name: Init submodule with vault
+        run: git submodule update --init --remote
+
+      - name: Check types and style
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Ensure Quartz builds, check bundle info
+        run: npx quartz build --bundleInfo
+
+      - name: Deploy using Rsync
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avrh --delete
+          path: public/
+          remote_path: /var/www/virtual/${{ vars.SSH_USERNAME }}/html
+          remote_host: ${{ vars.SSH_HOST }}
+          remote_user: ${{ vars.SSH_USERNAME }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}

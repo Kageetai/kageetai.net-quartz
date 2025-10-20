@@ -16,7 +16,7 @@ type SearchType = "basic" | "tags"
 let searchType: SearchType = "basic"
 let currentSearchTerm: string = ""
 const encoder = (str: string) => str.toLowerCase().split(/([^a-z]|[^\x00-\x7F])/)
-let index = new FlexSearch.Document<Item>({
+const index = new FlexSearch.Document<Item>({
   charset: "latin:extra",
   encode: encoder,
   document: {
@@ -148,7 +148,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   const data = await fetchData
   const container = document.getElementById("search-container")
   const sidebar = container?.closest(".sidebar") as HTMLElement
-  const searchIcon = document.getElementById("search-icon")
+  const searchButton = document.getElementById("search-button")
   const searchBar = document.getElementById("search-bar") as HTMLInputElement | null
   const searchLayout = document.getElementById("search-layout")
   const idDataMap = Object.keys(data) as FullSlug[]
@@ -178,7 +178,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
       searchBar.value = "" // clear the input when we dismiss the search
     }
     if (sidebar) {
-      sidebar.style.zIndex = "unset"
+      sidebar.style.zIndex = ""
     }
     if (results) {
       removeAllChildren(results)
@@ -191,6 +191,8 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     }
 
     searchType = "basic" // reset search type after closing
+
+    searchButton?.focus()
   }
 
   function showSearch(searchTypeNew: SearchType) {
@@ -208,13 +210,21 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     if (e.key === "k" && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
       e.preventDefault()
       const searchBarOpen = container?.classList.contains("active")
-      searchBarOpen ? hideSearch() : showSearch("basic")
+      if (searchBarOpen) {
+        hideSearch()
+      } else {
+        showSearch("basic")
+      }
       return
     } else if (e.shiftKey && (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
       // Hotkey to open tag search
       e.preventDefault()
       const searchBarOpen = container?.classList.contains("active")
-      searchBarOpen ? hideSearch() : showSearch("tags")
+      if (searchBarOpen) {
+        hideSearch()
+      } else {
+        showSearch("tags")
+      }
 
       // add "#" prefix for tag search
       if (searchBar) searchBar.value = "#"
@@ -419,7 +429,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
           index: ["title", "content"],
           tag: tag,
         })
-        for (let searchResult of searchResults) {
+        for (const searchResult of searchResults) {
           searchResult.result = searchResult.result.slice(0, numSearchResults)
         }
         // set search type to basic and remove tag from term for proper highlightning and scroll
@@ -458,8 +468,8 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
 
   document.addEventListener("keydown", shortcutHandler)
   window.addCleanup(() => document.removeEventListener("keydown", shortcutHandler))
-  searchIcon?.addEventListener("click", () => showSearch("basic"))
-  window.addCleanup(() => searchIcon?.removeEventListener("click", () => showSearch("basic")))
+  searchButton?.addEventListener("click", () => showSearch("basic"))
+  window.addCleanup(() => searchButton?.removeEventListener("click", () => showSearch("basic")))
   searchBar?.addEventListener("input", onType)
   window.addCleanup(() => searchBar?.removeEventListener("input", onType))
 
