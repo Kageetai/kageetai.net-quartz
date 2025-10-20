@@ -1,3 +1,4 @@
+// @ts-ignore
 import { QuartzPluginData } from "../plugins/vfile"
 import {
   joinSegments,
@@ -167,8 +168,10 @@ export function ExplorerNode({ node, opts, fullPath, fileData }: ExplorerNodePro
   const isDefaultOpen = opts.folderDefaultState === "open"
 
   // Calculate current folderPath
-  const folderPath = node.name !== "" ? joinSegments(fullPath ?? "", node.name) : ""
-  const href = resolveRelative(fileData.slug!, folderPath as SimpleSlug) + "/"
+  let folderPath = ""
+  if (node.name !== "") {
+    folderPath = joinSegments(fullPath ?? "", node.name)
+  }
 
   return (
     <>
@@ -202,7 +205,11 @@ export function ExplorerNode({ node, opts, fullPath, fileData }: ExplorerNodePro
               {/* render <a> tag if folderBehavior is "link", otherwise render <button> with collapse click event */}
               <div key={node.name} data-folderpath={folderPath}>
                 {folderBehavior === "link" ? (
-                  <a href={href} data-for={node.name} class="folder-title">
+                  <a
+                    href={resolveRelative(fileData.slug!, folderPath as SimpleSlug)}
+                    data-for={node.name}
+                    class="folder-title"
+                  >
                     {node.displayName}
                   </a>
                 ) : (
