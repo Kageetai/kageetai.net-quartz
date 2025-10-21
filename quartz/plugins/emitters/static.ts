@@ -8,6 +8,7 @@ export const Static: QuartzEmitterPlugin = () => ({
   name: "Static",
   async *emit({ argv, cfg }) {
     const staticPath = joinSegments(QUARTZ, "static")
+    const htaccessFile = ".htaccess"
     const fps = await glob("**", staticPath, cfg.configuration.ignorePatterns)
     const outputStaticPath = joinSegments(argv.output, "static")
     await fs.promises.mkdir(outputStaticPath, { recursive: true })
@@ -18,6 +19,11 @@ export const Static: QuartzEmitterPlugin = () => ({
       await fs.promises.copyFile(src, dest)
       yield dest
     }
+
+    // copy the custom .htaccess file
+    const dest = joinSegments(argv.output, htaccessFile)
+    await fs.promises.copyFile(joinSegments(QUARTZ, ".htaccess"), dest)
+    yield dest as FilePath
   },
   async *partialEmit() {},
 })
