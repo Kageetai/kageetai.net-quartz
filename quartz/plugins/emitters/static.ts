@@ -21,10 +21,9 @@ export const Static: QuartzEmitterPlugin = () => ({
     }
 
     // copy the custom .htaccess file
-    await fs.promises.copyFile(
-      joinSegments(QUARTZ, ".htaccess"),
-      joinSegments(argv.output, htaccessFile),
-    )
+    const dest = joinSegments(argv.output, htaccessFile)
+    await fs.promises.copyFile(joinSegments(QUARTZ, ".htaccess"), dest)
+    yield dest as FilePath
   },
   async *partialEmit() {},
 })
