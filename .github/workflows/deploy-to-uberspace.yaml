@@ -8,13 +8,10 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: "recursive"
-          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - uses: actions/checkout@v5
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 20
 
@@ -27,9 +24,6 @@ jobs:
             ${{ runner.os }}-node-
 
       - run: npm ci
-
-      - name: Init submodule with vault
-        run: git submodule update --init --remote
 
       - name: Check types and style
         run: npm run typecheck
