@@ -312,7 +312,7 @@ export async function handleBuild(argv) {
     }
 
     if (cleanupBuild) {
-      console.log(chalk.yellow("Detected a source code change, doing a hard rebuild..."))
+      console.log(styleText("yellow", "Detected a source code change, doing a hard rebuild..."))
       await cleanupBuild()
     }
 
@@ -462,13 +462,6 @@ export async function handleBuild(argv) {
         `Started a Quartz server listening at http://localhost:${argv.port}${argv.baseDir}`,
       ),
     )
-    console.log("hint: exit with ctrl+c")
-    const paths = await globby(["**/*.ts", "**/*.tsx", "**/*.scss", "package.json"])
-    chokidar
-      .watch(paths, { ignoreInitial: true })
-      .on("add", () => build(clientRefresh))
-      .on("change", () => build(clientRefresh))
-      .on("unlink", () => build(clientRefresh))
   } else {
     await build(clientRefresh)
     ctx.dispose()

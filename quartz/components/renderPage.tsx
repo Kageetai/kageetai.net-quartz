@@ -29,7 +29,7 @@ export function pageResources(
   const contentIndexPath = joinSegments(baseDir, "static/contentIndex.json")
   const contentIndexScript = `const fetchData = fetch("${contentIndexPath}").then(data => data.json())`
 
-  return {
+  const resources: StaticResources = {
     css: [
       {
         content: joinSegments(baseDir, "index.css"),

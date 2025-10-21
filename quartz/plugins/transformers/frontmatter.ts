@@ -40,6 +40,18 @@ function coerceToArray(input: string | string[]): string[] | undefined {
     .map((tag: string | number) => tag.toString())
 }
 
+function getAliasSlugs(aliases: string[]): FullSlug[] {
+  const res: FullSlug[] = []
+  for (const alias of aliases) {
+    const isMd = getFileExtension(alias) === "md"
+    const mockFp = isMd ? alias : alias + ".md"
+    const slug = slugifyFilePath(mockFp as FilePath)
+    res.push(slug)
+  }
+
+  return res
+}
+
 export const FrontMatter: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
   const opts = { ...defaultOptions, ...userOpts }
   return {
@@ -88,7 +100,28 @@ export const FrontMatter: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
 
             const socialImage = coalesceAliases(data, ["socialImage", "image", "cover"])
 
+            const created = coalesceAliases(data, ["created", "date"])
+            if (created) {
+              data.created = created
+            }
+
+            const modified = coalesceAliases(data, [
+              "modified",
+              "lastmod",
+              "updated",
+              "last-modified",
+            ])
+            if (modified) data.modified = modified
+            data.modified ||= created // if modified is not set, use created
+
+            const published = coalesceAliases(data, ["published", "publishDate", "date"])
+            if (published) data.published = published
+
             if (socialImage) data.socialImage = socialImage
+
+            // Remove duplicate slugs
+            const uniqueSlugs = [...new Set(allSlugs)]
+            allSlugs.splice(0, allSlugs.length, ...uniqueSlugs)
 
             // fill in frontmatter
             file.data.frontmatter = data as QuartzPluginData["frontmatter"]
@@ -111,6 +144,7 @@ declare module "vfile" {
         created: string
         published: string
         description: string
+        socialDescription: string
         publish: boolean | string
         draft: boolean | string
         lang: string

@@ -56,23 +56,6 @@ $breakpoints: (
 );
 ```
 
-### Layout breakpoints
-
-Quartz has different layouts depending on the width the screen viewing the website.
-
-The breakpoints for layouts can be configured in `variables.scss`.
-
-- `mobile`: screen width below this size will use mobile layout.
-- `desktop`: screen width above this size will use desktop layout.
-- Screen width between `mobile` and `desktop` width will use the tablet layout.
-
-```scss
-$breakpoints: (
-  mobile: 800px,
-  desktop: 1200px,
-);
-```
-
 ### Style
 
 Most meaningful style changes like colour scheme and font can be done simply through the [[configuration#General Configuration|general configuration]] options. However, if you'd like to make more involved style changes, you can do this by writing your own styles. Quartz 4, like Quartz 3, uses [Sass](https://sass-lang.com/guide/) for styling.

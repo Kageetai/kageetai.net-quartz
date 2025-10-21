@@ -16,9 +16,14 @@ interface Item {
 type SearchType = "basic" | "tags"
 let searchType: SearchType = "basic"
 let currentSearchTerm: string = ""
-const encoder = (str: string) => str.toLowerCase().split(/([^a-z]|[^\x00-\x7F])/)
+const encoder = (str: string) => {
+  return str
+    .toLowerCase()
+    .split(/\s+/)
+    .filter((token) => token.length > 0)
+}
+
 const index = new FlexSearch.Document<Item>({
-  charset: "latin:extra",
   encode: encoder,
   document: {
     id: "id",
@@ -144,15 +149,9 @@ function highlightHTML(searchTerm: string, el: HTMLElement) {
   return html.body
 }
 
-document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
-  const currentSlug = e.detail.url
-  const data = await fetchData
-  const container = document.getElementById("search-container")
-  const sidebar = container?.closest(".sidebar") as HTMLElement
-  const searchButton = document.getElementById("search-button")
-  const searchBar = document.getElementById("search-bar") as HTMLInputElement | null
-  const searchLayout = document.getElementById("search-layout")
-  const idDataMap = Object.keys(data) as FullSlug[]
+async function setupSearch(searchElement: Element, currentSlug: FullSlug, data: ContentIndex) {
+  const container = searchElement.querySelector(".search-container") as HTMLElement
+  if (!container) return
 
   const sidebar = container.closest(".sidebar") as HTMLElement | null
 
@@ -184,23 +183,16 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   }
 
   function hideSearch() {
-    container?.classList.remove("active")
-    if (searchBar) {
-      searchBar.value = "" // clear the input when we dismiss the search
-    }
-    if (sidebar) {
-      sidebar.style.zIndex = ""
-    }
-    if (results) {
-      removeAllChildren(results)
-    }
+    container.classList.remove("active")
+    searchBar.value = "" // clear the input when we dismiss the search
+    if (sidebar) sidebar.style.zIndex = ""
+    removeAllChildren(results)
     if (preview) {
       removeAllChildren(preview)
     }
     searchLayout.classList.remove("display-results")
     searchType = "basic" // reset search type after closing
-
-    searchButton?.focus()
+    searchButton.focus()
   }
 
   function showSearch(searchTypeNew: SearchType) {
@@ -214,7 +206,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   async function shortcutHandler(e: HTMLElementEventMap["keydown"]) {
     if (e.key === "k" && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
       e.preventDefault()
-      const searchBarOpen = container?.classList.contains("active")
+      const searchBarOpen = container.classList.contains("active")
       if (searchBarOpen) {
         hideSearch()
       } else {
@@ -224,7 +216,7 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
     } else if (e.shiftKey && (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
       // Hotkey to open tag search
       e.preventDefault()
-      const searchBarOpen = container?.classList.contains("active")
+      const searchBarOpen = container.classList.contains("active")
       if (searchBarOpen) {
         hideSearch()
       } else {
@@ -473,10 +465,10 @@ document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
 
   document.addEventListener("keydown", shortcutHandler)
   window.addCleanup(() => document.removeEventListener("keydown", shortcutHandler))
-  searchButton?.addEventListener("click", () => showSearch("basic"))
-  window.addCleanup(() => searchButton?.removeEventListener("click", () => showSearch("basic")))
-  searchBar?.addEventListener("input", onType)
-  window.addCleanup(() => searchBar?.removeEventListener("input", onType))
+  searchButton.addEventListener("click", () => showSearch("basic"))
+  window.addCleanup(() => searchButton.removeEventListener("click", () => showSearch("basic")))
+  searchBar.addEventListener("input", onType)
+  window.addCleanup(() => searchBar.removeEventListener("input", onType))
 
   registerEscapeHandler(container, hideSearch)
   await fillDocument(data)

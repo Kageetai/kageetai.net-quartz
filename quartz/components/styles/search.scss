@@ -8,20 +8,19 @@
   }
 
   & > .search-button {
-    background-color: var(--lightgray);
-    border: none;
+    background-color: transparent;
+    border: 1px var(--lightgray) solid;
     border-radius: 4px;
     font-family: inherit;
     font-size: inherit;
     height: 2rem;
-    padding: 0;
+    padding: 0 1rem 0 0;
     display: flex;
     align-items: center;
     text-align: inherit;
     cursor: pointer;
     white-space: nowrap;
     width: 100%;
-    justify-content: space-between;
 
     & > p {
       display: inline;
@@ -106,7 +105,7 @@
           flex: 0 0 min(30%, 450px);
         }
 
-        @media all and not ($tablet) {
+        @media all and not ($mobile) {
           &[data-preview] {
             & .result-card > p.preview {
               display: none;
@@ -132,8 +131,10 @@
           border-radius: 5px;
         }
 
-        @media all and ($tablet) {
-          & > #preview-container {
+        @media all and ($mobile) {
+          flex-direction: column;
+
+          & > .preview-container {
             display: none !important;
           }
 

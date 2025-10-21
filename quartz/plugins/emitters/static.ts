@@ -1,8 +1,8 @@
-import fs from "fs"
-import DepGraph from "../../depgraph"
-import { glob } from "../../util/glob"
 import { FilePath, QUARTZ, joinSegments } from "../../util/path"
 import { QuartzEmitterPlugin } from "../types"
+import fs from "fs"
+import { glob } from "../../util/glob"
+import { dirname } from "path"
 
 export const Static: QuartzEmitterPlugin = () => ({
   name: "Static",
@@ -18,26 +18,6 @@ export const Static: QuartzEmitterPlugin = () => ({
       await fs.promises.copyFile(src, dest)
       yield dest
     }
-
-    return graph
-  },
-  async emit({ argv, cfg }, _content, _resources): Promise<FilePath[]> {
-    const staticPath = joinSegments(QUARTZ, "static")
-    const htaccessFile = ".htaccess"
-
-    const fps = await glob("**", staticPath, cfg.configuration.ignorePatterns)
-    await fs.promises.cp(staticPath, joinSegments(argv.output, "static"), {
-      recursive: true,
-      dereference: true,
-    })
-
-    // copy the custom .htaccess file
-    await fs.promises.copyFile(
-      joinSegments(QUARTZ, ".htaccess"),
-      joinSegments(argv.output, htaccessFile),
-    )
-
-    return fps.map((fp) => joinSegments(argv.output, "static", fp)) as FilePath[]
   },
   async *partialEmit() {},
 })

@@ -1,5 +1,5 @@
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
-// @ts-expect-error: not a module
+// @ts-expect-error - not a module
 import script from "./scripts/graph.inline"
 import style from "./styles/graph.scss"
 import { i18n } from "../i18n"
@@ -67,8 +67,8 @@ export default ((opts?: Partial<GraphOptions>) => {
       <div class={classNames(displayClass, "graph")}>
         <h3>{i18n(cfg.locale).components.graph.title}</h3>
         <div class="graph-outer">
-          <div id="graph-container" data-cfg={JSON.stringify(localGraph)}></div>
-          <button id="global-graph-icon" aria-label="Global Graph">
+          <div class="graph-container" data-cfg={JSON.stringify(localGraph)}></div>
+          <button class="global-graph-icon" aria-label="Global Graph">
             <svg
               version="1.1"
               xmlns="http://www.w3.org/2000/svg"

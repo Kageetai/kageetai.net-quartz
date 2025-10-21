@@ -171,10 +171,9 @@ export async function parseMarkdown(ctx: BuildCtx, fps: FilePath[]): Promise<Pro
       maxWorkers: concurrency,
       workerType: "thread",
     })
-
-    const childPromises: WorkerPromise<ProcessedContent[]>[] = []
-    for (const chunk of chunks(fps, CHUNK_SIZE)) {
-      childPromises.push(pool.exec("parseFiles", [ctx.buildId, argv, chunk, ctx.allSlugs]))
+    const errorHandler = (err: any) => {
+      console.error(err)
+      process.exit(1)
     }
 
     const serializableCtx: WorkerSerializableBuildCtx = {

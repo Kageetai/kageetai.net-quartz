@@ -104,6 +104,8 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
         const date = getDate(ctx.cfg.configuration, file.data) ?? new Date()
         if (opts?.includeEmptyFiles || (file.data.text && file.data.text !== "")) {
           linkIndex.set(slug, {
+            slug,
+            filePath: file.data.relativePath!,
             // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
             title: file.data.frontmatter?.title!,
             links: file.data.links ?? [],

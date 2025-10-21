@@ -32,21 +32,10 @@ const defaultOptions: Options = {
 const orRegex = new RegExp(/{{or:(.*?)}}/, "g")
 const TODORegex = new RegExp(/{{.*?\bTODO\b.*?}}/, "g")
 const DONERegex = new RegExp(/{{.*?\bDONE\b.*?}}/, "g")
-// const videoRegex = new RegExp(/{{.*?\[\[video\]\].*?\:(.*?)}}/, "g")
-// const youtubeRegex = new RegExp(
-//   /{{.*?\[\[video\]\].*?(https?:\/\/(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]*)(&(amp;)?[\w\?=]*)?)}}/,
-//   "g",
-// )
 
-// const multimediaRegex = new RegExp(/{{.*?\b(video|audio)\b.*?\:(.*?)}}/, "g")
-
-// const audioRegex = new RegExp(/{{.*?\[\[audio\]\].*?\:(.*?)}}/, "g")
-// const pdfRegex = new RegExp(/{{.*?\[\[pdf\]\].*?\:(.*?)}}/, "g")
 const blockquoteRegex = new RegExp(/(\[\[>\]\])\s*(.*)/, "g")
 const roamHighlightRegex = new RegExp(/\^\^(.+)\^\^/, "g")
 const roamItalicRegex = new RegExp(/__(.+)__/, "g")
-// const tableRegex = new RegExp(/- {{.*?\btable\b.*?}}/, "g") /* TODO */
-// const attributeRegex = new RegExp(/\b\w+(?:\s+\w+)*::/, "g") /* TODO */
 
 function isSpecialEmbed(node: Paragraph): boolean {
   if (node.children.length !== 2) return false

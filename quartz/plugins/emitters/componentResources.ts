@@ -241,21 +241,6 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
       vercelInsightsScript.defer = true
       document.head.appendChild(vercelInsightsScript)
     `)
-  } else if (cfg.analytics?.provider === "matomo") {
-    const siteId = cfg.analytics.siteId
-    componentResources.afterDOMLoaded.push(`
-      var _paq = window._paq = window._paq || [];
-      /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-      _paq.push(['trackPageView']);
-      _paq.push(['enableLinkTracking']);
-      (function() {
-        var u="${cfg.analytics.host ?? "https://matomo.com"}/";
-        _paq.push(['setTrackerUrl', u+'matomo.php']);
-        _paq.push(['setSiteId', '${siteId}']);
-        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-        g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
-      })();
-    `)
   }
 
   if (cfg.enableSPA) {

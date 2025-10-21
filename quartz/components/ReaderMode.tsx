@@ -1,4 +1,4 @@
-// @ts-ignore
+// @ts-expect-error - not a module
 import readerModeScript from "./scripts/readermode.inline"
 import styles from "./styles/readermode.scss"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"

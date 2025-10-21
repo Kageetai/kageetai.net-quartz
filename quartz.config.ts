@@ -9,6 +9,7 @@ import * as Plugin from "./quartz/plugins"
 const config: QuartzConfig = {
   configuration: {
     pageTitle: "Kageetai.net",
+    pageTitleSuffix: "",
     enableSPA: true,
     enablePopovers: true,
     analytics: {
@@ -20,7 +21,6 @@ const config: QuartzConfig = {
     baseUrl: "kageetai.net",
     ignorePatterns: ["private", "Templates", ".obsidian", "Archive", "Journal"],
     defaultDateType: "created",
-    generateSocialImages: false,
     theme: {
       fontOrigin: "googleFonts",
       cdnCaching: true,

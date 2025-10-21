@@ -21,15 +21,20 @@ type FolderState = {
 
 let currentExplorerState: Array<FolderState>
 function toggleExplorer(this: HTMLElement) {
-  this.classList.toggle("collapsed")
-  this.setAttribute(
+  const nearestExplorer = this.closest(".explorer") as HTMLElement
+  if (!nearestExplorer) return
+  const explorerCollapsed = nearestExplorer.classList.toggle("collapsed")
+  nearestExplorer.setAttribute(
     "aria-expanded",
-    this.getAttribute("aria-expanded") === "true" ? "false" : "true",
+    nearestExplorer.getAttribute("aria-expanded") === "true" ? "false" : "true",
   )
-  const content = this.nextElementSibling as MaybeHTMLElement
-  if (!content) return
 
-  content.classList.toggle("collapsed")
+  if (!explorerCollapsed) {
+    // Stop <html> from being scrollable when mobile explorer is open
+    document.documentElement.classList.add("mobile-no-scroll")
+  } else {
+    document.documentElement.classList.remove("mobile-no-scroll")
+  }
 }
 
 function toggleFolder(evt: MouseEvent) {
