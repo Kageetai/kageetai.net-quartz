@@ -5,13 +5,11 @@ publish: true
 title: Welcome
 ---
 
-Welcome!
-
 > Ramblings, musing and the likes. Trying to practice writing and perhaps build a digital garden or blog here.
 
 My curiosity and passion for frontend development always keeps me trying out new technologies and features, the experience with I want to try to share here.
 
-Check my first article here: [[Scrolling Gradient|Scrolling Gradient]]
+Check my first articles on the left.
 
 Other projects can also be found on my [GitHub profile](https://github.com/Kageetai).
 
