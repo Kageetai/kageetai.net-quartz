@@ -1,12 +1,13 @@
 ---
 created: 2024-06-07T16:21+02:00
-changed: 2024-07-22T11:38+02:00
+changed: 2025-10-21T10:46+02:00
 publish: true
+title: Welcome
 ---
 
 Welcome!
 
-I am a frontend developer based in Berlin currently working full-time for Babbel.
+> Ramblings, musing and the likes. Trying to practice writing and perhaps build a digital garden or blog here.
 
 My curiosity and passion for frontend development always keeps me trying out new technologies and features, the experience with I want to try to share here.
 
