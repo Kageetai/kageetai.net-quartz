@@ -1,4 +1,14 @@
+# Enable URL rewriting
 RewriteEngine On
+
+# If the requested filename is not a directory
 RewriteCond %{REQUEST_FILENAME} !-d
+
+# Only rewrite URLs that don't already end with .html
+RewriteCond %{REQUEST_URI} !\.html$
+
+# And if the requested filename with .html extension exists as a file
 RewriteCond %{REQUEST_FILENAME}\.html -f
-RewriteRule ^(.*)$ $1.html [NC,L]
+
+# Then rewrite the URL to append .html
+RewriteRule ^([^\.]+)$ $1.html [NC,L]
