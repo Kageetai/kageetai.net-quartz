@@ -42,7 +42,7 @@ button#toc {
   }
 }
 
-#toc-content {
+ul.toc-content.overflow {
   list-style: none;
   overflow: hidden;
   overflow-y: auto;
@@ -61,23 +61,14 @@ button#toc {
     visibility: hidden;
   }
 
-  &.collapsed > .overflow::after {
-    opacity: 0;
-  }
-
-  & ul {
-    list-style: none;
-    margin: 0.5rem 0;
-    padding: 0;
-    & > li > a {
-      color: var(--dark);
-      opacity: 0.35;
-      transition:
-        0.5s ease opacity,
-        0.3s ease color;
-      &.in-view {
-        opacity: 0.75;
-      }
+  & > li > a {
+    color: var(--dark);
+    opacity: 0.35;
+    transition:
+      0.5s ease opacity,
+      0.3s ease color;
+    &.in-view {
+      opacity: 0.75;
     }
   }
   > ul.overflow {

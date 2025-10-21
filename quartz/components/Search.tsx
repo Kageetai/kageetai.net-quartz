@@ -33,13 +33,13 @@ export default ((userOpts?: Partial<SearchOptions>) => {
           <div id="search-space">
             <input
               autocomplete="off"
-              id="search-bar"
+              class="search-bar"
               name="search"
               type="text"
               aria-label={searchPlaceholder}
               placeholder={searchPlaceholder}
             />
-            <div id="search-layout" data-preview={opts.enablePreview}></div>
+            <div class="search-layout" data-preview={opts.enablePreview}></div>
           </div>
         </div>
       </div>

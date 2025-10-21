@@ -71,8 +71,6 @@ type TweenNode = {
 async function renderGraph(container: string, fullSlug: FullSlug) {
   const slug = simplifySlug(fullSlug)
   const visited = getVisited()
-  const graph = document.getElementById(container)
-  if (!graph) return
   removeAllChildren(graph)
 
   let {

@@ -1,5 +1,4 @@
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "../types"
-import path from "path"
 
 import style from "../styles/listPage.scss"
 import { byDateAndAlphabetical, PageList, SortFn } from "../PageList"
@@ -71,21 +70,22 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     })
 
     const cssClasses: string[] = fileData.frontmatter?.cssclasses ?? []
-    const classes = ["popover-hint", ...cssClasses].join(" ")
+    const classes = cssClasses.join(" ")
     const listProps = {
       ...props,
       sort: options.sort,
       allFiles: allPagesInFolder,
     }
 
-    const content =
+    const content = (
       (tree as Root).children.length === 0
         ? fileData.description
         : htmlToJsx(fileData.filePath!, tree)
+    ) as ComponentChildren
 
     return (
-      <div class={classes}>
-        <article>{content}</article>
+      <div class="popover-hint">
+        <article class={classes}>{content}</article>
         <div class="page-listing">
           {options.showFolderCount && (
             <p>
@@ -102,6 +102,6 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     )
   }
 
-  FolderContent.css = style + PageList.css
+  FolderContent.css = concatenateResources(style, PageList.css)
   return FolderContent
 }) satisfies QuartzComponentConstructor
