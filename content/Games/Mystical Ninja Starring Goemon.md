@@ -29,3 +29,5 @@ Outdated mechanics and weirdness aside, I have enjoyed replaying this game a lot
 But even with that, I had to realise that memories are always tainted, and we can never come back to an old experience the same as we were before. I felt happiness reliving old memories, but also the realisation that nothing is forever, even my enjoyment of old games.  
 Nostalgia might have influenced my perception in some way because, even though the game was technically not as good as I remembered, I still enjoyed bringing back the memories and music of the game.  
 Perhaps *Mystical Ninja Starring Goemon* isn't the flawless game my nostalgia led me to believe. The clunky controls and frustrating camera are hard to ignore. Yet, the game's quirky humor, memorable characters, and unique charm still resonate. It's a potent reminder that the value of a game often lies not just in its objective quality, but in the memories and emotions it evokes. Despite its flaws, *Mystical Ninja Starring Goemon* remains a cherished piece of my gaming history, a vibrant echo of a time when blocky graphics and bizarre storylines held endless fascination.  
+  
+Test change
