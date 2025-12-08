@@ -8,7 +8,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Setup Node
         uses: actions/setup-node@v6
@@ -38,7 +38,7 @@ jobs:
         run: npx quartz build --bundleInfo
 
       - name: Deploy using Rsync
-        uses: burnett01/rsync-deployments@7.1.0
+        uses: burnett01/rsync-deployments@8.0.2
         with:
           switches: -avrh --delete
           path: public/
